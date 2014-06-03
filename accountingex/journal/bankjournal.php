@@ -23,9 +23,9 @@
  */
 
 /**
- * \file		accountingex/journal/bankjournal.php
- * \ingroup	Accounting Expert
- * \brief		Page with sells journal
+ *	\file		accountingex/journal/bankjournal.php
+ *	\ingroup	Accounting Expert
+ *	\brief		Page with sells journal
  */
 
 // Dolibarr environment
@@ -60,6 +60,7 @@ $langs->load("companies");
 $langs->load("other");
 $langs->load("compta");
 $langs->load("bank");
+$langs->load('bills');
 $langs->load("accountingex@accountingex");
 
 $date_startmonth = GETPOST('date_startmonth');
@@ -76,7 +77,7 @@ if ($user->societe_id > 0)
 if (! $user->rights->accountingex->access)
 	accessforbidden();
 	
-	/*
+/*
  * View
  */
 
@@ -106,7 +107,7 @@ $sql .= " FROM " . MAIN_DB_PREFIX . "bank b";
 $sql .= " JOIN " . MAIN_DB_PREFIX . "bank_account ba on b.fk_account=ba.rowid";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "bank_url bu1 ON bu1.fk_bank = b.rowid AND bu1.type='company'";
 $sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "societe soc on bu1.url_id=soc.rowid";
-// Pour isoler la caisse des autres comptes
+// To isolate the cash of the other accounts
 $sql .= " WHERE ba.courant <> 2";
 if (! empty($conf->multicompany->enabled)) {
 	$sql .= " AND ba.entity = " . $conf->entity;
@@ -127,7 +128,7 @@ $result = $db->query($sql);
 if ($result) {
 	
 	$num = $db->num_rows($result);
-	// les variables
+	// Variables
 	$cptfour = (! empty($conf->global->COMPTA_ACCOUNT_SUPPLIER) ? $conf->global->COMPTA_ACCOUNT_SUPPLIER : $langs->trans("CodeNotDef"));
 	$cptcli = (! empty($conf->global->COMPTA_ACCOUNT_CUSTOMER) ? $conf->global->COMPTA_ACCOUNT_CUSTOMER : $langs->trans("CodeNotDef"));
 	$cpttva = (! empty($conf->global->ACCOUNTINGEX_ACCOUNT_SUSPENSE) ? $conf->global->ACCOUNTINGEX_ACCOUNT_SUSPENSE : $langs->trans("CodeNotDef"));
@@ -147,7 +148,7 @@ if ($result) {
 	while ( $i < $num ) {
 		$obj = $db->fetch_object($result);
 		
-		// contrôles
+		// Controls
 		$compta_bank = $obj->account_number;
 		if ($obj->label == '(SupplierInvoicePayment)')
 			$compta_soc = (! empty($obj->code_compta_fournisseur) ? $obj->code_compta_fournisseur : $cptfour);
@@ -156,8 +157,9 @@ if ($result) {
 		if ($obj->typeop == '(BankTransfert)')
 			$compta_soc = $conf->global->ACCOUNTINGEX_ACCOUNT_TRANSFER_CASH;
 			
-			// variable bookkeeping
+		// Variable bookkeeping
 		$tabpay[$obj->rowid]["date"] = $obj->do;
+		$tabpay[$obj->rowid]["type_payment"] = $obj->fk_type;
 		$tabpay[$obj->rowid]["ref"] = $obj->label;
 		$tabpay[$obj->rowid]["fk_bank"] = $obj->rowid;
 		if (preg_match('/^\((.*)\)$/i', $obj->label, $reg)) {
@@ -242,11 +244,11 @@ if ($result) {
  * Actions
 */
 
-// write bookkeeping
+// Write bookkeeping
 if ($action == 'writeBookKeeping') {
 	$error = 0;
 	foreach ( $tabpay as $key => $val ) {
-		// bank
+		// Bank
 		foreach ( $tabbq[$key] as $k => $mt ) {
 			$bookkeeping = new BookKeeping($db);
 			$bookkeeping->doc_date = $val["date"];
@@ -297,7 +299,7 @@ if ($action == 'writeBookKeeping') {
 				setEventMessage($object->errors, 'errors');
 			}
 		}
-		// third party
+		// Third party
 		foreach ( $tabtp[$key] as $k => $mt ) {
 			
 			$bookkeeping = new BookKeeping($db);
@@ -510,6 +512,7 @@ if ($action == 'export_csv') {
 	print "<td>" . $langs->trans("Piece") . ' (' . $langs->trans("InvoiceRef") . ")</td>";
 	print "<td>" . $langs->trans("Account") . "</td>";
 	print "<td>" . $langs->trans("Type") . "</td>";
+	print "<td>" . $langs->trans("PaymentMode") . "</td>";
 	print "<td align='right'>" . $langs->trans("Debit") . "</td><td align='right'>" . $langs->trans("Credit") . "</td>";
 	print "</tr>\n";
 	
@@ -524,7 +527,7 @@ if ($action == 'export_csv') {
 		if ($val["lib"] == '(CustomerInvoicePayment)')
 			$reflabel = $langs->trans('CustomerInvoicePayment');
 			
-			// Bank
+		// Bank
 		foreach ( $tabbq[$key] as $k => $mt ) {
 			if (1) {
 				print "<tr " . $bc[$var] . ">";
@@ -532,6 +535,7 @@ if ($action == 'export_csv') {
 				print "<td>" . $reflabel . "</td>";
 				print "<td>" . length_accountg($k) . "</td>";
 				print "<td>" . $langs->trans('Bank') . "</td>";
+				print "<td>" . $langs->trans('Vide'). $val["type_payment"] . "</td>";
 				print "<td align='right'>" . ($mt >= 0 ? price($mt) : '') . "</td>";
 				print "<td align='right'>" . ($mt < 0 ? price(- $mt) : '') . "</td>";
 				print "</tr>";
@@ -546,6 +550,7 @@ if ($action == 'export_csv') {
 				print "<td>" . $val["soclib"] . "</td>";
 				print "<td>" . length_accounta($k) . "</td>";
 				print "<td>" . $langs->trans('ThirdParty') . " (" . $val['soclib'] . ")</td>";
+				print "<td>" . $val["type_payment"] . "</td>";
 				print "<td align='right'>" . ($mt < 0 ? price(- $mt) : '') . "</td>";
 				print "<td align='right'>" . ($mt >= 0 ? price($mt) : '') . "</td>";
 				print "</tr>";
