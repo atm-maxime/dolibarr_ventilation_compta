@@ -535,7 +535,7 @@ if ($action == 'export_csv') {
 				print "<td>" . $reflabel . "</td>";
 				print "<td>" . length_accountg($k) . "</td>";
 				print "<td>" . $langs->trans('Bank') . "</td>";
-				print "<td>" . $langs->trans('Vide'). $val["type_payment"] . "</td>";
+				print "<td>" . $val["type_payment"] . "</td>";
 				print "<td align='right'>" . ($mt >= 0 ? price($mt) : '') . "</td>";
 				print "<td align='right'>" . ($mt < 0 ? price(- $mt) : '') . "</td>";
 				print "</tr>";
