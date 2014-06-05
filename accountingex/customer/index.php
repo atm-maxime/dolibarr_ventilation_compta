@@ -1,7 +1,7 @@
 <?php
-/* Copyright (C) 2013      Olivier Geffroy      <jeff@jeffinfo.com>
- * Copyright (C) 2013-2014 Florian Henry	      <florian.henry@open-concept.pro>
- * Copyright (C) 2013-2014 Alexandre Spangaro   <alexandre.spangaro@gmail.com> 
+/* Copyright (C) 2013      Olivier Geffroy		<jeff@jeffinfo.com>
+ * Copyright (C) 2013-2014 Florian Henry		<florian.henry@open-concept.pro>
+ * Copyright (C) 2013-2014 Alexandre Spangaro	<alexandre.spangaro@gmail.com> 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
  */
 
 /**
- * \file accountingex/customer/index.php
- * \ingroup Accounting Expert
- * \brief Page accueil clients ventilation comptable
+ * \file		accountingex/customer/index.php
+ * \ingroup		Accounting Expert
+ * \brief		Page accueil clients ventilation comptable
  */
 // Dolibarr environment
 $res = @include ("../main.inc.php");
@@ -50,7 +50,7 @@ if ($user->societe_id > 0)
 if (! $user->rights->accountingex->access)
 	accessforbidden();
 	
-	// Filter
+// Filter
 $year = $_GET["year"];
 if ($year == 0) {
 	$year_current = strftime("%Y", time());
@@ -60,7 +60,7 @@ if ($year == 0) {
 	$year_start = $year;
 }
 
-// ValidateHistory
+// Validate History
 $action = GETPOST('action');
 if ($action == 'validatehistory') {
 	
