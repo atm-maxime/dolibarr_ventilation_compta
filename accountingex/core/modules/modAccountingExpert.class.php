@@ -76,7 +76,7 @@ class modAccountingExpert extends DolibarrModules {
 		); // Minimum version of PHP required by module
 		$this->need_dolibarr_version = array (
 				3,
-				6 
+				5 
 		); // Minimum version of Dolibarr required by module
 		$this->langfiles = array (
 				"accountingex@accountingex" 
@@ -164,6 +164,10 @@ class modAccountingExpert extends DolibarrModules {
 				"yesno",
 				"1" 
 		);
+		
+		// Tabs
+		$this->tabs = array('bank:+journal:Journal:accountingex@accountingex:$user->rights->accountingex->access:/accountingex/bank.php?mainmenu=accountingex&account=__ID__');
+
 		
 		// Css
 		$this->module_parts = array (

@@ -36,9 +36,11 @@ if (! $res && file_exists("../../../main.inc.php"))
 if (! $res)
 	die("Include of main fails");
 	
-	// Class
+// Class
 dol_include_once("/core/lib/admin.lib.php");
 dol_include_once("/accountingex/core/lib/account.lib.php");
+dol_include_once("/core/lib/bank.lib.php");
+require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 
 $langs->load('accountingex@accountingex');
 
@@ -123,6 +125,52 @@ print '</form>';
 print "</table>\n";
 
 print '<br /><div style="text-align:center"><input type="submit" class="button" value="' . $langs->trans('Modify') . '" name="button"></div>';
+
+print '<br />';
+
+// Bank account
+$sql  = "SELECT ba.rowid, ba.ref , ba.label, ba.bank , ba.account_number, ba.code_journal ";
+$sql .= " FROM ".MAIN_DB_PREFIX."lx_bank_account as ba";
+$sql .= " WHERE ba.clos = 0" ;
+$sql .= " ORDER BY label";
+
+dol_syslog('accountingex/admin/journaux.php:: $sql='.$sql);
+
+$resql = $db->query($sql);
+if ($resql)
+{
+	$num = $db->num_rows($resql);
+	$i = 0;
+
+}
+
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td colspan="3">' . $langs->trans('JournauxTresorerie') . '</td>';
+print "</tr>\n";
+
+$form2 = new Form($db);
+
+$account = new Account($db);
+foreach ( $resql as $key ) {
+	$var = ! $var;
+	
+	print '<tr ' . $bc[$var] . ' class="value">';
+	
+	// Param
+	$label = $langs->trans($key);
+	print '<td><label for="' . $key . '">' . $label . '</label></td>';
+	
+	// Value
+	print '<td>';
+	print '<input type="text" size="20" id="' . $key . '" name="' . $key . '" value="' . $conf->global->$key . '">';
+	print '</td></tr>';
+}
+
+print '</table>';
+print '</div>';
+
+print '<br>';
 
 llxFooter();
 $db->close();

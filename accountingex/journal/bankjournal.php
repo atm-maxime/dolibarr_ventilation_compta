@@ -404,10 +404,10 @@ if ($action == 'export_csv') {
 			foreach ( $tabbq[$key] as $k => $mt ) {
 				print length_accountg(html_entity_decode($k)) . $sep;
 				print $sep;
-				print $langs->trans("Bank") . $sep;
 				print ($mt < 0 ? 'C' : 'D') . $sep;
 				print ($mt <= 0 ? price(- $mt) : $mt) . $sep;
 				print $val["ref"] . $sep;
+				print $langs->trans("Bank") . $sep;
 			}
 			print "\n";
 			
@@ -422,10 +422,10 @@ if ($action == 'export_csv') {
 						print length_accountg($conf->global->COMPTA_ACCOUNT_CUSTOMER) . $sep;
 					}
 					print length_accounta(html_entity_decode($k)) . $sep;
-					print $companystatic->name . $sep;
 					print ($mt < 0 ? 'D' : 'C') . $sep;
 					print ($mt <= 0 ? price(- $mt) : $mt) . $sep;
 					print $val["ref"] . $sep;
+					print $companystatic->name . $sep;
 					print "\n";
 				}
 			}
