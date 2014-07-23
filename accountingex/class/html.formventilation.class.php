@@ -2,6 +2,7 @@
 /* Copyright (C) 2013-2014 Florian Henry        <florian.henry@open-concept.pro>
  * Copyright (C) 2013-2014 Olivier Geffroy      <jeff@jeffinfo.com>
  * Copyright (C) 2013-2014 Alexandre Spangaro   <alexandre.spangaro@gmail.com>
+ * Copyright (C) 2014	   Juanjo Menent		<jmenent@2byte.es>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,7 +156,9 @@ class FormVentilation extends Form {
 		$out = '';
 		
 		$sql = "SELECT DISTINCT pcg_type ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount a";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "accounting_system b ON a.fk_pcg_version=b.pcg_version";
+		$sql .= " WHERE b.rowid=".$conf->global->CHARTOFACCOUNTS;
 		$sql .= " ORDER BY pcg_type";
 		
 		dol_syslog(get_class($this) . "::select_pcgtype sql=" . $sql, LOG_DEBUG);
@@ -207,7 +210,9 @@ class FormVentilation extends Form {
 		$out = '';
 		
 		$sql = "SELECT DISTINCT pcg_subtype ";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount ";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "accountingaccount a";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "accounting_system b ON a.fk_pcg_version=b.pcg_version";
+		$sql .= " WHERE b.rowid=".$conf->global->CHARTOFACCOUNTS;
 		$sql .= " ORDER BY pcg_subtype";
 		
 		dol_syslog(get_class($this) . "::select_pcgsubtype sql=" . $sql, LOG_DEBUG);
